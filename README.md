@@ -15,7 +15,7 @@ cd MarsMission
 Building the MarsMission web app
 --------------------------------
 
-We first need to download project dependecies and then we are ready to start it:  
+We first need to download project dependencies and then we'll be ready to start it:  
 ```
 npm update
 node app.js
