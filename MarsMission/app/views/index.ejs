@@ -37,15 +37,28 @@ $(document).ready(function() {
               y:              MISSION_START.Y
             });
 
-        socket.on('new_path', function (newPath) {
-          console.log('Mission Control message: new path: {ETA:' + newPath.ETA + ', path:' + newPath.path + '}');
+        socket.on('new_instruction', function (newIntruction) {
+          if('move'==newIntruction.type){
+            console.log('Mission Control message: new path: {ETA:' + newIntruction.ETA + ', path:' + newIntruction.path + '}');
+  
+            var path = paper.path( newIntruction.path) 
+                .attr({stroke: "#fff0f0", opacity: .50, "stroke-width": 1.5})
+                .translate(MAP_OFFSET.X, MAP_OFFSET.Y);
+            var pathLength = path.getTotalLength();
+            
+            animateRover(socket, paper, rover, path, newIntruction.ETA, over, pathLength, runnedPath, locationTxt, distanceTxt, traveledTxt);
+          } else if('take_picture'==newIntruction.type){
+            console.log("take_picture instruction not yet implemented");
+            socket.emit('msg', 
+                { 
+                  message_type:   'on_location', 
+                  x:              (rover.attr("transform")[0][1]-MAP_OFFSET.X).toFixed(2), 
+                  y:              (rover.attr("transform")[0][2]-MAP_OFFSET.Y).toFixed(2)
+                });
 
-          var path = paper.path( newPath.path) 
-              .attr({stroke: "#fff0f0", opacity: .50, "stroke-width": 1.5})
-              .translate(MAP_OFFSET.X, MAP_OFFSET.Y);
-          var pathLength = path.getTotalLength();
-          
-          animateRover(socket, paper, rover, path, newPath.ETA, over, pathLength, runnedPath, locationTxt, distanceTxt, traveledTxt);
+          } else {
+            //Unknown instruction? :O
+          }
 
         });  
 

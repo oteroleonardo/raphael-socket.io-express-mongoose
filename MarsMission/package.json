@@ -1,18 +1,24 @@
 {
-  "name": "MongooseAndMarsRover",
-  "version": "0.1.0",
-  "description": "Mongoose & Mars Rover!",
-  "private": true,
-  "scripts": {
-    "start": "node app",
-    "test": "echo \"Error: no test specified\" && exit 1"
- 
-  },
-  "dependencies": {
-    "express": "3.0.0rc5",
-    "socket.io": "0.9.10",    
-    "express-partials": "0.0.6",
-    "ejs": "0.8.3",
-    "stylus": "0.30.1"
-  }
+  "name": "MarsMission"
+  , "version": "0.1.0"
+  , "description": "A Mars Mission using Raphael, Socket.io, Express, Mongoose"
+  , "private": false
+  , "author": "Madhusudhan Srinivasa <madhums8@gmail.com> (http://madhums.github.com)"
+  , "engines": {
+        "node": "0.8.6"
+      , "npm": "1.1.63"
+    }  
+  , "scripts": {
+      "start": "node app",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    }
+  , "dependencies": {
+      "express": "3.0.0rc5"
+      , "socket.io": "0.9.10"   
+      , "express-partials": "0.0.6"
+      , "ejs": "0.8.3"
+      , "stylus": "0.30.1"
+      , "mongoose": "3.3.1 "
+      , "nodemon": "0.6.23"
+    }
 }
