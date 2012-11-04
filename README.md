@@ -23,12 +23,12 @@ node app.js
 
 nodemon to the rescue
 ---------------------
-If you are like me you don't like to restart your node server each time there is a change in the source code and there is when [nodemon](http://github.com/remy/nodemon) comes to the rescue:
+If you are like me you don't like to restart your node server each time there is a change in the source code and that's when [nodemon](http://github.com/remy/nodemon) comes to the rescue:
 ```
-
+npm install nodemon -g
 ```
 And then we could start the server as easy like sunday morning:
 ```
-nodemon app.js
+nodemon app.js [APP_PARAMS_HERE]
 ```
 
