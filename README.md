@@ -1,6 +1,6 @@
 <p align=right><img style="margin=0" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me at github"/></p> 
 #raphael-socket.io-express-mongoose
-A demo web app to show Node.js, Raphaeljs, socket.io, Express.js, Mongoose and MongoDB integration
+A demo web app to show [Node.js](http://nodejs.org/), [Raphael.js](http://raphaeljs.com/), [Socket.io](http://socket.io/), [Express.js](http://expressjs.com/), [Mongoose.js](http://mongoosejs.com/) and [MongoDB](http://www.mongodb.org/) integration
 
 Git repository basic usage
 --------------------------
