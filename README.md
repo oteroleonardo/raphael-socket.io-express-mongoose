@@ -23,7 +23,7 @@ node app.js
 
 nodemon to the rescue
 ---------------------
-If you are like me you don't like to restart your node server each time there is a change in the source code and there is when nodemon comes to the rescue:
+If you are like me you don't like to restart your node server each time there is a change in the source code and there is when [nodemon](http://github.com/remy/nodemon) comes to the rescue:
 ```
 
 ```
