@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Node, Mongo and Socket goes to space</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/demo.css" media="screen">
+    <link rel="stylesheet" href="css/demo-print.css" media="print">
+    <script src="js/raphael-min.js"></script>
+    <script>
+var SCALE_FACTOR = 5.74;
+var MAP_OFFSET = {X:13, Y:-14};
+var MISSION_START = { X: 238.8, Y: 62.44}; 
+$(document).ready(function() {
+    var socket = io.connect('http://<%-socketURL%>'); 
+    socket.emit('set nickname', 'Opportunity');
+ 
+    Raphael("screen", 614, 760, function () {
+        var paper = this
+        , runnedPath=0
+        , animStatus = null
+        , a = startAssets(this);
+        
+        var map = a.map
+        , circle = a.circle
+        , rover  = a.rover
+        , over = a.over
+        , display = a.display.click(startStopAnim(rover, animStatus))
+        , locationTxt = a.locationTxt, traveledTxt = a.traveledTxt
+        , distanceTxt = a.distanceTxt;             
+
+        socket.emit('msg', 
+            { 
+              message_type:   'on_location', 
+              x:              MISSION_START.X, 
+              y:              MISSION_START.Y
+            });
+
+        socket.on('new_path', function (newPath) {
+          console.log('Mission Control message: new path: {ETA:' + newPath.ETA + ', path:' + newPath.path + '}');
+
+          var path = paper.path( newPath.path) 
+              .attr({stroke: "#fff0f0", opacity: .50, "stroke-width": 1.5})
+              .translate(MAP_OFFSET.X, MAP_OFFSET.Y);
+          var pathLength = path.getTotalLength();
+          
+          animateRover(socket, paper, rover, path, newPath.ETA, over, pathLength, runnedPath, locationTxt, distanceTxt, traveledTxt);
+
+        });  
+
+
+ 
+    });
+
+  });
+
+function startAssets(paper){
+  return {
+    map:          paper.image("img/mars_opportunity_map_1.png", 0, 0, 614, 760),
+    circle:       paper.circle(MISSION_START.X+MAP_OFFSET.X,MISSION_START.Y+MAP_OFFSET.Y, 10)
+                    .attr({stroke: "#ff6060", fill: "none"}),
+    rover:        paper.image("img/mars_rover_sprite.png", -MAP_OFFSET.X, MAP_OFFSET.Y, 20, 20),
+    over:         paper.path().attr({stroke: "#30D030", opacity: .60}),
+    display:      paper.rect(10, 60, 216, 216, 15).attr({stroke: "none", fill: "#000000", opacity: .3}),
+    locationTxt:  paper.text(20, 70, "Rover cords: (0, 0)")
+                    .attr({ fill: "fff0f0", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} ),
+    traveledTxt:  paper.text(20, 94, "Total 0 miles\nTraveled 0 miles\nRemaining 0 miles\n")
+                    .attr({ fill: "fff0f0", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} ),
+    distanceTxt:  paper.text(20, 118, "Distance: 0 miles")
+                    .attr({ fill: "#30D030", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} )
+
+  };
+}
+
+function animateRover(socket, paper, rover, path, ETA, over, pathLength, runnedPath, locationTxt, distanceTxt, traveledTxt){            
+  rover.onAnimation(function () {
+    var tr = this.attr("transform");
+    var roverXScaled = ((tr[0][1]-MISSION_START.X)*SCALE_FACTOR*2).toFixed(4);
+    var roverYScaled = ((tr[0][2]-MISSION_START.Y)*SCALE_FACTOR*2).toFixed(4);
+    over.attr({path: 'M' + (MISSION_START.X+MAP_OFFSET.X).toFixed(2) + ',' + (MISSION_START.Y+MAP_OFFSET.Y).toFixed(2) + 'L' 
+      + (tr[0][1]) + ',' + (tr[0][2]) + 'z'});
+    var labelDist = (over.getTotalLength()*SCALE_FACTOR).toFixed(4);
+      locationTxt.attr({text: 'Rover cords: (' +  roverXScaled + ', '+ roverYScaled + ')'});
+      
+    traveledTxt.attr({text: 'Current Path Total: ' + (pathLength*SCALE_FACTOR*2).toFixed(4) 
+          + ' miles \nCurrent Path Traveled: '+ (runnedPath*pathLength*SCALE_FACTOR*2).toFixed(4)
+          + ' miles \nCurrent Path Remaining: '+ ((pathLength - (runnedPath*pathLength)) *SCALE_FACTOR*2).toFixed(4)
+          + ' miles'});
+    distanceTxt.attr({text: 'Distance: ' + labelDist + ' miles'});
+  });
+
+  paper.customAttributes.along = function moveAlong(delta) {
+      runnedPath = delta;
+      var dist = delta * pathLength;
+      var point = path.getPointAtLength(dist);
+      if(delta>=1) {
+          socket.emit('msg', 
+              { 
+                message_type:   'on_location', 
+                x:              (rover.attr("transform")[0][1]-MAP_OFFSET.X).toFixed(2), 
+                y:              (rover.attr("transform")[0][2]-MAP_OFFSET.Y).toFixed(2)
+              });
+      }
+      return { transform: "t" + [(point.x + MAP_OFFSET.X), (point.y + MAP_OFFSET.Y)] + "r" + point.alpha };
+  };
+  rover.attr({along: 0});
+  
+  var rotateAlongThePath = true;
+  
+  function run() {
+      rover.animate({along: 1}, ETA);
+      rover.isRunning = true;
+      rover.toFront();
+  }
+  run();
+
+}
+
+function startStopAnim(element, animStatus){
+return  function(){
+                 if(element.isRunning) {
+                     animStatus = element.status(element.anim)[0].status;
+                     element.pause(element.anim);
+                     element.isRunning = false;
+                 } else {
+                     element.resume(element.anim); 
+                     element.isRunning = true;
+                 }
+        };
+}
+
+    </script>
+</head>
+<body>
+    <div id="screen"> </div>
+    <p id="copy">Demo: Node, Mongo and Socket go to space</p>
+</body>
+</html>
