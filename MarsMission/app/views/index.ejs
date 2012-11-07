@@ -9,11 +9,15 @@
     <link rel="stylesheet" href="css/demo-print.css" media="print">
     <script src="js/raphael-min.js"></script>
     <script>
+
 var SCALE_FACTOR = 5.74;
 var MAP_OFFSET = {X:13, Y:-14};
 var MISSION_START = { X: 238.8, Y: 62.44}; 
+
 $(document).ready(function() {
-    var socket = io.connect('http://<%-socketURL%>'); 
+    var socket = io.connect('http://<%-socketURL%>');
+
+ 
     socket.emit('set nickname', 'Opportunity');
  
     Raphael("screen", 614, 760, function () {
@@ -38,8 +42,8 @@ $(document).ready(function() {
             });
 
         socket.on('new_instruction', function (newIntruction) {
-          if('move'==newIntruction.type){
-            console.log('Mission Control message: new path: {ETA:' + newIntruction.ETA + ', path:' + newIntruction.path + '}');
+          var responseMessage = {};
+          if('move' == newIntruction.type){
   
             var path = paper.path( newIntruction.path) 
                 .attr({stroke: "#fff0f0", opacity: .50, "stroke-width": 1.5})
@@ -47,28 +51,34 @@ $(document).ready(function() {
             var pathLength = path.getTotalLength();
             
             animateRover(socket, paper, rover, path, newIntruction.ETA, over, pathLength, runnedPath, locationTxt, distanceTxt, traveledTxt);
-          } else if('take_picture'==newIntruction.type){
-            console.log("take_picture instruction not yet implemented");
-            socket.emit('msg', 
-                { 
-                  message_type:   'on_location', 
-                  x:              (rover.attr("transform")[0][1]-MAP_OFFSET.X).toFixed(2), 
-                  y:              (rover.attr("transform")[0][2]-MAP_OFFSET.Y).toFixed(2)
-                });
+            console.log('Mission Control message: new path: {ETA:' + newIntruction.ETA + ', path:' + newIntruction.path + '}');
 
           } else {
-            console.log('Intruction: ' + newIntruction.type + ' not yet implemented');
-            //Unknown instruction? :O
+            if('take_picture' == newIntruction.type){
+              console.log("take_picture instruction received");
+              responseMessage.picture= takePicture();
+              console.log("picture has been taken");
+            } else if('end_of_mission' == newIntruction.type) {
+              console.log('Intruction: ' + newIntruction.type + ' so this is the end of the mars mission');
+
+            }else {
+              console.log('Intruction: ' + newIntruction.type + ' not yet implemented');
+            }
+            responseMessage.message_type = 'on_location';
+            responseMessage.x = (rover.attr("transform")[0][1]-MAP_OFFSET.X).toFixed(2);
+            responseMessage.y = (rover.attr("transform")[0][2]-MAP_OFFSET.Y).toFixed(2);
+            socket.emit('msg', responseMessage);
           }
 
-        });  
-
-
+        });
  
     });
 
   });
 
+function takePicture(){
+  return dummyPictures[currentPicture++];
+}
 function startAssets(paper){
   return {
     map:          paper.image("img/mars_opportunity_map_1.png", 0, 0, 614, 760),
@@ -122,6 +132,7 @@ function animateRover(socket, paper, rover, path, ETA, over, pathLength, runnedP
   
   var rotateAlongThePath = true;
   
+  
   function run() {
       rover.animate({along: 1}, ETA);
       rover.isRunning = true;
@@ -144,10 +155,14 @@ return  function(){
         };
 }
 
+var dummyPictures = ['img/mars3.jsp', 'img/where_s_waldo_on_mars.png','080309_mars_3.jpg'];
+var currentPicture =0;
+
     </script>
 </head>
 <body>
     <div id="screen"> </div>
     <p id="copy">Demo: Node, Mongo and Socket go to space</p>
+
 </body>
 </html>
