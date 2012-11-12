@@ -19,7 +19,11 @@ $(document).ready(function() {
 
  
     socket.emit('set nickname', 'Opportunity');
- 
+    socket.on('nickname_accepted', function (nickname) {
+      console.log('Mission Control message: nickname_accepted: ' + nickname);
+
+    });
+
     Raphael("screen", 614, 760, function () {
         var paper = this
         , runnedPath=0
@@ -55,14 +59,15 @@ $(document).ready(function() {
 
           } else {
             if('take_picture' == newIntruction.type){
-              console.log("take_picture instruction received");
+              console.log("Mission Control message: Instruction take_picture received");
               responseMessage.picture= takePicture();
               console.log("picture has been taken");
             } else if('end_of_mission' == newIntruction.type) {
-              console.log('Intruction: ' + newIntruction.type + ' so this is the end of the mars mission');
+              console.log('Mission Control message: Intruction: ' 
+                + newIntruction.type + ' so this is the end of the mars mission');
 
             }else {
-              console.log('Intruction: ' + newIntruction.type + ' not yet implemented');
+              console.log('Mission Control message: Intruction: ' + newIntruction.type + ' not yet implemented');
             }
             responseMessage.message_type = 'on_location';
             responseMessage.x = (rover.attr("transform")[0][1]-MAP_OFFSET.X).toFixed(2);
@@ -84,14 +89,14 @@ function startAssets(paper){
     map:          paper.image("img/mars_opportunity_map_1.png", 0, 0, 614, 760),
     circle:       paper.circle(MISSION_START.X+MAP_OFFSET.X,MISSION_START.Y+MAP_OFFSET.Y, 10)
                     .attr({stroke: "#ff6060", fill: "none"}),
-    rover:        paper.image("img/mars_rover_sprite.png", -MAP_OFFSET.X, MAP_OFFSET.Y, 20, 20),
+    rover:        paper.image("img/mars_rover_sprite.png", -MAP_OFFSET.X, MAP_OFFSET.Y, 30, 30),
     over:         paper.path().attr({stroke: "#30D030", opacity: .60}),
     display:      paper.rect(10, 60, 216, 216, 15).attr({stroke: "none", fill: "#000000", opacity: .3}),
     locationTxt:  paper.text(20, 70, "Rover cords: (0, 0)")
                     .attr({ fill: "fff0f0", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} ),
-    traveledTxt:  paper.text(20, 94, "Total 0 miles\nTraveled 0 miles\nRemaining 0 miles\n")
+    traveledTxt:  paper.text(20, 94, "Total 0 miles\nTraveled 0 meters\nRemaining 0 meters\n")
                     .attr({ fill: "fff0f0", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} ),
-    distanceTxt:  paper.text(20, 118, "Distance: 0 miles")
+    distanceTxt:  paper.text(20, 118, "Distance: 0 meters")
                     .attr({ fill: "#30D030", font: "10px Helvetica", 'text-anchor': 'start', opacity: 0.8} )
 
   };
@@ -108,10 +113,10 @@ function animateRover(socket, paper, rover, path, ETA, over, pathLength, runnedP
       locationTxt.attr({text: 'Rover cords: (' +  roverXScaled + ', '+ roverYScaled + ')'});
       
     traveledTxt.attr({text: 'Current Path Total: ' + (pathLength*SCALE_FACTOR*2).toFixed(4) 
-          + ' miles \nCurrent Path Traveled: '+ (runnedPath*pathLength*SCALE_FACTOR*2).toFixed(4)
-          + ' miles \nCurrent Path Remaining: '+ ((pathLength - (runnedPath*pathLength)) *SCALE_FACTOR*2).toFixed(4)
-          + ' miles'});
-    distanceTxt.attr({text: 'Distance: ' + labelDist + ' miles'});
+          + ' meters \nCurrent Path Traveled: '+ (runnedPath*pathLength*SCALE_FACTOR*2).toFixed(4)
+          + ' meters \nCurrent Path Remaining: '+ ((pathLength - (runnedPath*pathLength)) *SCALE_FACTOR*2).toFixed(4)
+          + ' meters'});
+    distanceTxt.attr({text: 'Distance: ' + labelDist + ' meters'});
   });
 
   paper.customAttributes.along = function moveAlong(delta) {
@@ -155,14 +160,21 @@ return  function(){
         };
 }
 
-var dummyPictures = ['img/mars3.jsp', 'img/where_s_waldo_on_mars.png','080309_mars_3.jpg'];
+var dummyPictures = ['img/life_on_mars.jpg', 'img/mars3.jpg','img/080309_mars_3.jpg'];
 var currentPicture =0;
 
     </script>
 </head>
 <body>
-    <div id="screen"> </div>
-    <p id="copy">Demo: Node, Mongo and Socket go to space</p>
-
+  <div>
+    <div style="float:left" id="screen"> </div>
+    
+    <div id="pictures">
+      <img style="float:right" id="img1" src="img/life_on_mars.jpg"/>
+      <img style="float:right" id="img2" src="img/mars3.jpg"/><br>
+      <img style="float:right" id="img3" src="img/080309_mars_3.jpg"/>
+      <p id="copy">Demo: Node, Mongo and Socket go to space</p>
+    </div>
+  </div>
 </body>
 </html>

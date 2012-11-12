@@ -5,9 +5,9 @@ body {
 }
 #screen {
     height: 1200px;
-    left: 50%;
+/*    left: 50%; */
     margin: 0 0 0 -320px;
-    position: absolute;
+/*    position: absolute; */
     top: 0;
     width: 1200px;
 }
