@@ -4,17 +4,26 @@ body {
     font: 100.1% "Lucida Grande", Lucida, Verdana, sans-serif;
 }
 #screen {
-    height: 1200px;
-/*    left: 50%; */
-    margin: 0 0 0 -320px;
-/*    position: absolute; */
+    float: left;
+    margin: 0 0 0 0px;
     top: 0;
-    width: 1200px;
+    width: 614px;
 }
+
+#pictures {
+    float: left;
+    margin: 0 0 0 0px;
+    margin-top: 25px;
+    width: 614px;
+
+}
+
 #copy {
     bottom: 0;
-    font-size: .7em;
-    position: absolute;
+    font: 300 .7em "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif;
     right: 1em;
-    text-align: right;
+    text-align: center;
+}
+#copy a {
+    color: #fff;
 }
