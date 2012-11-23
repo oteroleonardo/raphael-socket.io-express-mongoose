@@ -162,11 +162,12 @@ io.sockets.on('connection', function (socket) {
           if(data.picture) {
             console.log('The following picture has been received with last location: ' + data.picture );
           }
-
+          // To understand it in a better way just visit http://mongoosejs.com/docs/queries.html
           Instructions.findOne()
             .where('program', 1)
             .where('line').gt(instructionPointer)
             .select({_id:0, program:1, line:1, type:1, path:1, ETA:1})
+            .sort('line')
             .exec(function(err, instructionFromDB){
               if(err) {
                 console.log(err);
