@@ -2,6 +2,10 @@
 #raphael-socket.io-express-mongoose
 A demo web app to show [Node.js](http://nodejs.org/), [Raphael.js](http://raphaeljs.com/), [Socket.io](http://socket.io/), [Express.js](http://expressjs.com/), [Mongoose.js](http://mongoosejs.com/) and [MongoDB](http://www.mongodb.org/) integration
 
+MongoDB is required
+-------------------
+To properly run the web app you need to have MongoDB already installed in your System. The application assumes you are using the default MongoDB port 27017. In case you need to install MongoDB just follow the indications present in [MongoDB installation](http://docs.mongodb.org/manual/installation/) 
+
 Git repository basic usage
 --------------------------
 
