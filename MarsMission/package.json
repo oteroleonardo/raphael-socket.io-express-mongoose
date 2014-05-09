@@ -3,7 +3,7 @@
   , "version": "0.1.0"
   , "description": "A Mars Mission using Raphael, Socket.io, Express, Mongoose"
   , "private": false
-  , "author": "Madhusudhan Srinivasa <madhums8@gmail.com> (http://madhums.github.com)"
+  , "author": "Leonardo Otero <oteroleonardo@gmail.com> (http://oteroleonardo.github.com)"
   , "engines": {
         "node": "0.8.6"
       , "npm": "1.1.63"
