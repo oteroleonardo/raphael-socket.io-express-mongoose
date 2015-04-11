@@ -36,6 +36,6 @@ And then we could start the server as easy like sunday morning:
 nodemon app.js [APP_PARAMS_HERE]
 ```
 
-[Mars Map](./MarsMission/public/img/mars_opportunity_map_1.png)
+![Mars Map]:(./MarsMission/public/img/mars_opportunity_map_1.png)
 
 
